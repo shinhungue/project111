@@ -84,9 +84,13 @@ void Board::print_job(int job_idx, char job_type, int id) {
 
 
 void Board::insert_page(int x, int y, int width, int height, int id, int content) {
-    Page page(x,y,width,height.)
-
-
+    char con = content;
+    Page page(x,y,width,height,id,con);
+    for (int h = y; h < y+height; h++) {
+        for (int w = x; w < x+ width; w++) {
+            board[h*width + w] = page[h*width+w];
+        }
+    }
 }
 
 void Board::delete_page(int id) {
