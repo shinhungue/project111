@@ -13,7 +13,7 @@ void manage_board(string input_file, string output_file) {
     char job_type;
     ifstream input;
     ofstream output;
-    int a;
+
     input.open(input_file);
 
     if (!(input.is_open())) {
