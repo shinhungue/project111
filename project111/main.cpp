@@ -8,7 +8,7 @@ using namespace std;
 
 void manage_board(string input_file, string output_file) {
 
-    int width, height;
+    int width, height, sex;
     int num_jobs;
     char job_type;
     ifstream input;
