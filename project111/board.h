@@ -84,7 +84,7 @@ void Board::print_job(int job_idx, char job_type, int id) {
 
 
 void Board::insert_page(int x, int y, int width, int height, int id, int content) {
-
+    Page page(x,y,width,height.)
 
 
 }
