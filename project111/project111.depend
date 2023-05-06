@@ -1,13 +1,13 @@
 # depslib dependency file v1.0
-1683116523 source:c:\codecpp\project111\main.cpp
+1683343789 source:c:\codecpp\project111\main.cpp
 	<iostream>
 	<fstream>
 	<string>
 	"board.h"
 
-1683119343 c:\codecpp\project111\board.h
+1683344391 c:\codecpp\project111\board.h
 	<fstream>
 	"page.h"
 
-1683119791 c:\codecpp\project111\page.h
+1683278275 c:\codecpp\project111\page.h
 

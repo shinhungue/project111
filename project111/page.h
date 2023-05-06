@@ -1,6 +1,7 @@
 class Page {
     public:
         Page(int x, int y, int w, int h, int id, char con);
+        char* getpage(){return page;}
     private:
         int x, y; // position of the page on the board
         int width, height; // width and height of the page
