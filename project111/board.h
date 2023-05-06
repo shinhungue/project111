@@ -19,7 +19,7 @@ public:
   void delete_page(int id);
   void modify_content(int id, char content);
   void modify_position(int id, int x, int y);
-  void remove_page(int id);
+  void removes_page(int id);
 
 private:
   int num_jobs, width, height;
@@ -138,7 +138,7 @@ void Board::delete_page(int id) {
 
 
 
-void Board::remove_page(int id) {
+void Board::removes_page(int id) {
     int idx = -1;
     for (int i = pages.size() - 1; i >= 0; i--) {
         if (pages[i].get_id() == id) {
@@ -155,41 +155,37 @@ void Board::remove_page(int id) {
         Page new_page(pages[j-1].get_x(),pages[j-1].get_y(),pages[j-1].get_width(),pages[j-1].get_height(),pages[j-1].get_id(),pages[j-1].get_content());
       update_board(new_page, true);
       }
-    if(is_print_board_enabled==true){
-      print_board();
-    }
     }
 
 }
 
 void Board::modify_content(int id, char content) {
-  Page target_page;
-  bool found = false;
-  for(int i=0;i<width*height;i++){
-    if(board[i]!='.' && pages[board[i]].get_id() == id){
-      target_page = pages[board[i]];
-      found = true;
+  int idx = -1;
+  for(int i = pages.size()-1;i>=0;i--){
+    if(pages[i].get_id()==id){
+      idx = i;
       break;
     }
   }
-  is_print_board_enabled = false;
-  std::vector<Page> exist_pages;
-  for(int i=0;i<width*height;i++){
-    if(board[i]!='.'){
-      exist_pages.push_back(pages[board[i]]);
-      remove_page(board[i]);
-    }
+  for(int j=pages.size()-1;j>=idx;j--){
+    removes_page(pages[j].get_id());
+  }
+    print_board();
+
+  pages[idx].set_content(content);
+  for(int k=idx;k<pages.size();k++){
+    Page new_modify_page(pages[k].get_x(),pages[k].get_y(),pages[k].get_width(),pages[k].get_height(),pages[k].get_id(),pages[k].get_content());
+    update_board(new_modify_page,true);
   }
   print_board();
-  target_page.set_content(content);
+  }
 
-  insert_page(target_page.get_x(), target_page.get_y(), target_page.get_width(), target_page.get_height(), target_page.get_id(), target_page.get_content());
-
-  for (int i = exist_pages.size() - 1; i >= 0; i--) {
-        insert_page(exist_pages[i].get_x(), exist_pages[i].get_y(), exist_pages[i].get_width(),
-                    exist_pages[i].get_height(), exist_pages[i].get_id(), exist_pages[i].get_content());
+void Board::modify_position(int id, int x, int y) {
+  int idx = -1;
+  for(int i = pages.size()-1;i>=0;i--){
+    if(pages[i].get_id()==id){
+      idx = i;
+      break;
     }
-  print_board();
-  is_print_board_enabled = true;
+  }
 }
-void Board::modify_position(int id, int x, int y) {}
