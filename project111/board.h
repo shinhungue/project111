@@ -101,41 +101,28 @@ void Board::insert_page(int x, int y, int width, int height, int id,
 }
 
 void Board::delete_page(int id) {
- int index = -1;
-    for (int i = 0; i < pages.size(); i++) {
+    int idx = -1;
+    for (int i = pages.size() - 1; i >= 0; i--) {
         if (pages[i].get_id() == id) {
-            index = i;
+            idx = i;
             break;
         }
     }
 
-  if (index != -1) {
-        pages.erase(pages.begin() + index);
-        int num_pages= pages.size();
-        for (int i = index; i < num_pages; i++) {
-            int x = pages[i].get_x();
-            int y = pages[i].get_y();
-            int w = pages[i].get_width();
-            int h = pages[i].get_height();
-            int id = pages[i].get_id();
-            char content = pages[i].get_content();
 
-            for (int j = x; j < x + w; j++) {
-                for (int k = y; k < y + h; k++) {
-                    board[j * width + k] = ' ';
-                }
-            }
-
-            for (int j = x; j < x + w; j++) {
-                for (int k = y; k < y + h; k++) {
-                    board[j * width + k] = (j == x && k == y) ? '+' : symbol;
-                }
-            }
-}
+    for(int i=pages.size()-1;i>=idx;i--){
+      Page delete_page(pages[i].get_x(),pages[i].get_y(),pages[i].get_width(),pages[i].get_height(),pages[i].get_id(),' ');
+      update_board(delete_page,true);
+      for(int j=1;j<=i;j++){
+        Page new_page(pages[j-1].get_x(),pages[j-1].get_y(),pages[j-1].get_width(),pages[j-1].get_height(),pages[j-1].get_id(),pages[j-1].get_content());
+      update_board(new_page, true);
+      }
     if(is_print_board_enabled==true){
-    print_board();
-  }
-  }
+      print_board();
+    }
+    }
+
+}
 
 void Board::modify_content(int id, char content) {
   Page target_page;
