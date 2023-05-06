@@ -19,6 +19,7 @@ public:
   void delete_page(int id);
   void modify_content(int id, char content);
   void modify_position(int id, int x, int y);
+  void remove_page(int id);
 
 private:
   int num_jobs, width, height;
@@ -117,6 +118,43 @@ void Board::delete_page(int id) {
         Page new_page(pages[j-1].get_x(),pages[j-1].get_y(),pages[j-1].get_width(),pages[j-1].get_height(),pages[j-1].get_id(),pages[j-1].get_content());
       update_board(new_page, true);
       }
+
+
+    if(is_print_board_enabled==true){
+      print_board();
+    }
+
+      }
+
+  pages.erase(pages.begin()+idx);
+  for(int k=idx;k<pages.size();k++){
+        Page again_page(pages[k].get_x(),pages[k].get_y(),pages[k].get_width(),pages[k].get_height(),pages[k].get_id(),pages[k].get_content());
+    update_board(again_page,true);
+    if(is_print_board_enabled==true){
+      print_board();
+    }
+  }
+    }
+
+
+
+void Board::remove_page(int id) {
+    int idx = -1;
+    for (int i = pages.size() - 1; i >= 0; i--) {
+        if (pages[i].get_id() == id) {
+            idx = i;
+            break;
+        }
+    }
+
+
+    for(int i=pages.size()-1;i>=idx;i--){
+      Page remove_page(pages[i].get_x(),pages[i].get_y(),pages[i].get_width(),pages[i].get_height(),pages[i].get_id(),' ');
+      update_board(remove_page,true);
+      for(int j=1;j<=i;j++){
+        Page new_page(pages[j-1].get_x(),pages[j-1].get_y(),pages[j-1].get_width(),pages[j-1].get_height(),pages[j-1].get_id(),pages[j-1].get_content());
+      update_board(new_page, true);
+      }
     if(is_print_board_enabled==true){
       print_board();
     }
@@ -139,7 +177,7 @@ void Board::modify_content(int id, char content) {
   for(int i=0;i<width*height;i++){
     if(board[i]!='.'){
       exist_pages.push_back(pages[board[i]]);
-      delete_page(board[i]);
+      remove_page(board[i]);
     }
   }
   print_board();
