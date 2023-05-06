@@ -1,127 +1,125 @@
 #include <fstream>
 
 #include "page.h"
+#include <vector>
 
 using std::endl;
 using std::ofstream;
 
 class Board {
-    public:
-        Board(int num_jobs, int width, int height, ofstream& output_stream);
-        ~Board();
+public:
+  Board(int num_jobs, int width, int height, ofstream &output_stream);
+  ~Board();
 
-        void print_board();
-        void print_job(int job_idx, char job_type, int id);
+  void print_board();
+  void print_job(int job_idx, char job_type, int id);
 
-        //job functions
-        void insert_page(int x, int y, int width, int height, int id, int content);
-        void delete_page(int id);
-        void modify_content(int id, char content);
-        void modify_position(int id, int x, int y);
+  // job functions
+  void insert_page(int x, int y, int width, int height, int id, int content);
+  void delete_page(int id);
+  void modify_content(int id, char content);
+  void modify_position(int id, int x, int y);
 
-    private:
-        int num_jobs, width, height;
-        ofstream& output;
-        char* board;
+private:
+  int num_jobs, width, height;
+  ofstream &output;
+  char *board;
+  std::vector<Page> pages;
+
+  void update_board(const Page &page, bool add) {
+    char symbol = add ? page.get_content() : '.';
+    for (int i = page.get_y(); i < page.get_y() + page.get_height(); i++) {
+      for (int j = page.get_x(); j < page.get_x() + page.get_width(); j++) {
+        board[i * width + j] = symbol;
+      }
+    }
+  }
 };
 
+Board::Board(int num_jobs, int width, int height, ofstream &output_stream)
+    : output(output_stream) {
+  this->width = width;
+  this->height = height;
+  this->num_jobs = num_jobs;
 
-Board::Board(int num_jobs, int width, int height, ofstream& output_stream): output(output_stream) {
-    this->width = width;
-    this->height = height;
-    this->num_jobs = num_jobs;
+  board = new char[width * height];
 
-    board = new char[width*height];
-
-    for (int h = 0; h < height; h++) {
-        for (int w = 0; w < width; w++) {
-            board[h*width + w] = ' ';
-        }
+  for (int h = 0; h < height; h++) {
+    for (int w = 0; w < width; w++) {
+      board[h * width + w] = ' ';
     }
-
+  }
 }
 
-Board::~Board() {
-    delete board;
-
-}
-
+Board::~Board() { delete board; }
 
 void Board::print_board() {
-    int h, w;
-    for (w = 0; w < width+2; w++) output << "- ";
-    output << endl;
+  int h, w;
+  for (w = 0; w < width + 2; w++)
+    output << "- ";
+  output << endl;
 
-    for (h = 0; h < height; h++) {
-        output << "| ";
-        for (w = 0; w < width; w++) {
-            output << board[h*width + w] << " ";
-        }
-        output << "| " << endl;
+  for (h = 0; h < height; h++) {
+    output << "| ";
+    for (w = 0; w < width; w++) {
+      output << board[h * width + w] << " ";
     }
+    output << "| " << endl;
+  }
 
-    for (w = 0; w < width+2; w++) output << "- ";
-    output << endl;
+  for (w = 0; w < width + 2; w++)
+    output << "- ";
+  output << endl;
 }
 
 void Board::print_job(int job_idx, char job_type, int id) {
-    output << ">> (" << job_idx <<") ";
-    switch(job_type) {
+  output << ">> (" << job_idx << ") ";
+  switch (job_type) {
 
-        case 'i':
-            output << "Insert ";
-            break;
-        case 'd':
-            output << "Delete ";
-            break;
-        case 'm':
-            output << "Modify ";
-            break;
-    }
+  case 'i':
+    output << "Insert ";
+    break;
+  case 'd':
+    output << "Delete ";
+    break;
+  case 'm':
+    output << "Modify ";
+    break;
+  }
 
-    output << id << endl;
+  output << id << endl;
 }
 
-
-void Board::insert_page(int x, int y, int width, int height, int id, int content) {
-    for(int h=0;h<height;h++){
-        for(int w=0;w<width;w++){
-            board[(y+h)*this->width+(x+w)] = content;
-            }
-        }
-
-        print_job(num_jobs++,'i',id);
-    }
+void Board::insert_page(int x, int y, int width, int height, int id,
+                        int content) {
+  Page page(x, y, width, height, id, content);
+  pages.push_back(page);
+  update_board(page, true);
+  print_board();
+}
 
 void Board::delete_page(int id) {
-    int x=-1 , y=-1;
-    for(int h=0;h<height;h++){
-        for(int w=0;w<width;w++){
-            if(board[h*this->width+w]==id+'0'){
-                x=w;
-                y=h;
-                break;
-            }
-        }
-        if(x !=-1) break;
+  int x = -1, y = -1;
+  for (int h = 0; h < height; h++) {
+    for (int w = 0; w < width; w++) {
+      if (board[h * this->width + w] == id + '0') {
+        x = w;
+        y = h;
+        break;
+      }
     }
+    if (x != -1)
+      break;
+  }
 
-    for(int h=y;h<y+2;h++){
-        for(int w=x;w<x+4;w++){
-            board[h*this->width+w]=' ';
-        }
+  for (int h = y; h < y + 2; h++) {
+    for (int w = x; w < x + 4; w++) {
+      board[h * this->width + w] = ' ';
     }
+  }
 
-    print_job(num_jobs++,'d',id);
-
+  print_board();
 }
 
-void Board::modify_content(int id, char content) {
-
-
-
-}
-void Board::modify_position(int id, int x, int y) {
-
-
-}
+void Board::modify_content(int id, char content) {}
+void Board::modify_position(int id, int x, int y) {}
