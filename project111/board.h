@@ -119,6 +119,7 @@ void Board::delete_page(int id) {
 void Board::modify_content(int id, char content) {
 
 
+
 }
 void Board::modify_position(int id, int x, int y) {
 
