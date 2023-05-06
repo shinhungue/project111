@@ -5,7 +5,7 @@
 
 using std::endl;
 using std::ofstream;
-
+bool is_print_board_enabled =true;
 class Board {
 public:
   Board(int num_jobs, int width, int height, ofstream &output_stream);
@@ -26,6 +26,7 @@ private:
   char *board;
   std::vector<Page> pages;
 
+
   void update_board(const Page &page, bool add) {
     char symbol = add ? page.get_content() : '.';
     for (int i = page.get_y(); i < page.get_y() + page.get_height(); i++) {
@@ -41,7 +42,6 @@ Board::Board(int num_jobs, int width, int height, ofstream &output_stream)
   this->width = width;
   this->height = height;
   this->num_jobs = num_jobs;
-
   board = new char[width * height];
 
   for (int h = 0; h < height; h++) {
@@ -95,31 +95,76 @@ void Board::insert_page(int x, int y, int width, int height, int id,
   Page page(x, y, width, height, id, content);
   pages.push_back(page);
   update_board(page, true);
-  print_board();
+  if(is_print_board_enabled == true){
+    print_board();
+  }
 }
 
 void Board::delete_page(int id) {
-  int x = -1, y = -1;
-  for (int h = 0; h < height; h++) {
-    for (int w = 0; w < width; w++) {
-      if (board[h * this->width + w] == id + '0') {
-        x = w;
-        y = h;
-        break;
-      }
+ int index = -1;
+    for (int i = 0; i < pages.size(); i++) {
+        if (pages[i].get_id() == id) {
+            index = i;
+            break;
+        }
     }
-    if (x != -1)
-      break;
-  }
 
-  for (int h = y; h < y + 2; h++) {
-    for (int w = x; w < x + 4; w++) {
-      board[h * this->width + w] = ' ';
-    }
-  }
+  if (index != -1) {
+        pages.erase(pages.begin() + index);
+        int num_pages= pages.size();
+        for (int i = index; i < num_pages; i++) {
+            int x = pages[i].get_x();
+            int y = pages[i].get_y();
+            int w = pages[i].get_width();
+            int h = pages[i].get_height();
+            int id = pages[i].get_id();
+            char content = pages[i].get_content();
 
-  print_board();
+            for (int j = x; j < x + w; j++) {
+                for (int k = y; k < y + h; k++) {
+                    board[j * width + k] = ' ';
+                }
+            }
+
+            for (int j = x; j < x + w; j++) {
+                for (int k = y; k < y + h; k++) {
+                    board[j * width + k] = (j == x && k == y) ? '+' : symbol;
+                }
+            }
 }
+    if(is_print_board_enabled==true){
+    print_board();
+  }
+  }
 
-void Board::modify_content(int id, char content) {}
+void Board::modify_content(int id, char content) {
+  Page target_page;
+  bool found = false;
+  for(int i=0;i<width*height;i++){
+    if(board[i]!='.' && pages[board[i]].get_id() == id){
+      target_page = pages[board[i]];
+      found = true;
+      break;
+    }
+  }
+  is_print_board_enabled = false;
+  std::vector<Page> exist_pages;
+  for(int i=0;i<width*height;i++){
+    if(board[i]!='.'){
+      exist_pages.push_back(pages[board[i]]);
+      delete_page(board[i]);
+    }
+  }
+  print_board();
+  target_page.set_content(content);
+
+  insert_page(target_page.get_x(), target_page.get_y(), target_page.get_width(), target_page.get_height(), target_page.get_id(), target_page.get_content());
+
+  for (int i = exist_pages.size() - 1; i >= 0; i--) {
+        insert_page(exist_pages[i].get_x(), exist_pages[i].get_y(), exist_pages[i].get_width(),
+                    exist_pages[i].get_height(), exist_pages[i].get_id(), exist_pages[i].get_content());
+    }
+  print_board();
+  is_print_board_enabled = true;
+}
 void Board::modify_position(int id, int x, int y) {}
