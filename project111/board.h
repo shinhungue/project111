@@ -2,6 +2,7 @@
 
 #include "page.h"
 #include <vector>
+#include <algorithm>
 
 using std::endl;
 using std::ofstream;
@@ -102,7 +103,7 @@ void Board::insert_page(int x, int y, int width, int height, int id,
 }
 
 void Board::delete_page(int id) {
-    int idx = -1;
+  int idx = -1;
     for (int i = pages.size() - 1; i >= 0; i--) {
         if (pages[i].get_id() == id) {
             idx = i;
@@ -110,33 +111,71 @@ void Board::delete_page(int id) {
         }
     }
 
+if(idx!=-1){
+  std::vector<Page> dPage;
+  dPage.resize(pages.size());
+  copy(pages.begin(),pages.end(),dPage.begin());  //pages 복사본 dPage
+  std::vector<Page> tracking_page;
+  std::vector<std::pair<int,Page>> index_v;
+  std::vector<int> V1;
+  for(int i=dPage[idx].get_x();i<dPage[idx].get_x()+dPage[idx].get_width();i++){
+    V1.push_back(i);
+  }
+  std::vector<int> V6;
+  for(int i=dPage[idx].get_y();i<dPage[idx].get_y()+dPage[idx].get_height();i++){
+    V6.push_back(i);
+  }
 
-    for(int i=pages.size()-1;i>=idx;i--){
-      Page delete_page(pages[i].get_x(),pages[i].get_y(),pages[i].get_width(),pages[i].get_height(),pages[i].get_id(),' ');
-      update_board(delete_page,true);
-      for(int j=1;j<=i;j++){
-        Page new_page(pages[j-1].get_x(),pages[j-1].get_y(),pages[j-1].get_width(),pages[j-1].get_height(),pages[j-1].get_id(),pages[j-1].get_content());
-      update_board(new_page, true);
-      }
+  for(int c=idx+1;c<dPage.size();c++){
+    std::vector <int> V2;
+    std::vector <int> V4;
+    std::vector <int> V3(V1.size()+V2.size());
+    std::vector <int> V5(V6.size()+V4.size());
+    for(int i=dPage[c].get_x();i<dPage[c].get_x()+dPage[c].get_width();i++){
+    V2.push_back(i);
+  }
+  for(int i=dPage[idx].get_y();i<dPage[idx].get_y()+dPage[idx].get_height();i++){
+    V4.push_back(i);
+  }
+    auto iterx = set_intersection(V1.begin(),V1.end(),V2.begin(),V2.end(),V3.begin());
+    auto itery = set_intersection(V6.begin(),V6.end(),V4.begin(),V4.end(),V5.begin());
+    V3.erase(iterx,V3.end());
+    sort(V3.begin(),V3.end());
+    V5.erase(itery,V5.end());
+    sort(V5.begin(),V5.end());  // V3, V5 는 각각 x,y 좌표값 교집합 (곂치는 부분)
+    if((dPage[idx].get_x()<dPage[c].get_x()<dPage[idx].get_x()+dPage[idx].get_width() || dPage[idx].get_x()<dPage[c].get_x()+dPage[c].get_width()<dPage[idx].get_x()+dPage[idx].get_width()  || dPage[idx].get_y()<dPage[c].get_y()<dPage[idx].get_y()+dPage[idx].get_height() || dPage[idx].get_y()<dPage[c].get_y()+dPage[c].get_height()<dPage[idx].get_y()+dPage[idx].get_height()) &&
+      (for(int r=idx+1;r<dPage.size();r++){
+      dPage[r]
+      }) )
+  tracking_page.push_back(dPage[c]);
+    index_v.push_back({c,dPage[c]});
+  }
 
+if(tracking_page.size()>0){
 
-    if(is_print_board_enabled==true){
-      print_board();
-    }
-
-      }
-
-  pages.erase(pages.begin()+idx);
-  for(int k=idx;k<pages.size();k++){
-        Page again_page(pages[k].get_x(),pages[k].get_y(),pages[k].get_width(),pages[k].get_height(),pages[k].get_id(),pages[k].get_content());
-    update_board(again_page,true);
-    if(is_print_board_enabled==true){
-      print_board();
+sort(tracking_page.begin(), tracking_page.end());
+for(int a= 0;a<tracking_page.size();a++){
+  delete_page(tracking_page[a].get_id());
+  Page deleted_page(tracking_page[a].get_x(),tracking_page[a].get_y(), tracking_page[a].get_width(), tracking_page[a].get_height(), tracking_page[a].get_id(), ' ');
+  update_board(deleted_page, true);
+  int id_index= -1;
+  for(int b=0;b<index_v.size();b++){
+    if( index_v[b].second.get_id()== tracking_page[a].get_id()){
+      id_index =index_v[b].first;
+      break;
     }
   }
+    for(int p=0;p<id_index;p++){
+      Page back_page(dPage[p].get_x(),dPage[p].get_y(),dPage[p].get_width(),dPage[p].get_height(),dPage[p].get_id(),dPage[p].get_content());
+      update_board(back_page,true);
     }
-
-
+  }
+}
+ print_board();
+ dPage.erase(dPage.begin()+idx);
+  }
+}
+}
 
 void Board::removes_page(int id) {
     int idx = -1;
