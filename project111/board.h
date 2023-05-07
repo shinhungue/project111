@@ -103,20 +103,25 @@ void Board::insert_page(int x, int y, int width, int height, int id,
 }
 
 void Board::delete_page(int id) {
-  int idx = -1;
-    for (int i = pages.size() - 1; i >= 0; i--) {
-        if (pages[i].get_id() == id) {
-            idx = i;
-            break;
-        }
-    }
-
-if(idx!=-1){
   std::vector<Page> dPage;
   dPage.resize(pages.size());
   copy(pages.begin(),pages.end(),dPage.begin());  //pages 복사본 dPage
+
+  int idx = -1;
+  for (int i = dPage.size() - 1; i >= 0; i--) {
+      if (dPage[i].get_id() == id) {
+          idx = i;
+          break;
+        }
+    }          // id 해당 page 찾기(idx) dPage 에서
+
+
   std::vector<Page> tracking_page;
   std::vector<std::pair<int,Page>> index_v;
+  for(int z=0;z<dPage.size();z++){
+    index_v.push_back({z,dPage[z]});
+  }
+
   std::vector<int> V1;
   for(int i=dPage[idx].get_x();i<dPage[idx].get_x()+dPage[idx].get_width();i++){
     V1.push_back(i);
@@ -131,6 +136,7 @@ if(idx!=-1){
     std::vector <int> V4;
     std::vector <int> V3(V1.size()+V2.size());
     std::vector <int> V5(V6.size()+V4.size());
+
     for(int i=dPage[c].get_x();i<dPage[c].get_x()+dPage[c].get_width();i++){
     V2.push_back(i);
   }
@@ -143,40 +149,63 @@ if(idx!=-1){
     sort(V3.begin(),V3.end());
     V5.erase(itery,V5.end());
     sort(V5.begin(),V5.end());  // V3, V5 는 각각 x,y 좌표값 교집합 (곂치는 부분)
-    if((dPage[idx].get_x()<dPage[c].get_x()<dPage[idx].get_x()+dPage[idx].get_width() || dPage[idx].get_x()<dPage[c].get_x()+dPage[c].get_width()<dPage[idx].get_x()+dPage[idx].get_width()  || dPage[idx].get_y()<dPage[c].get_y()<dPage[idx].get_y()+dPage[idx].get_height() || dPage[idx].get_y()<dPage[c].get_y()+dPage[c].get_height()<dPage[idx].get_y()+dPage[idx].get_height()) &&
-      (for(int r=idx+1;r<dPage.size();r++){
-      dPage[r]
-      }) )
-  tracking_page.push_back(dPage[c]);
-    index_v.push_back({c,dPage[c]});
+
+    bool inter = false;
+  if(dPage[idx].get_x()<dPage[c].get_x()<dPage[idx].get_x()+dPage[idx].get_width() || dPage[idx].get_x()<dPage[c].get_x()+dPage[c].get_width()<dPage[idx].get_x()+dPage[idx].get_width()  || dPage[idx].get_y()<dPage[c].get_y()<dPage[idx].get_y()+dPage[idx].get_height() || dPage[idx].get_y()<dPage[c].get_y()+dPage[c].get_height()<dPage[idx].get_y()+dPage[idx].get_height())
+{
+  inter = true;
+}
+    // delete 대상 page 와 곂치는 부분 있는지 확인
+  bool above = true;
+    for(int r=idx+1;r<c;r++)
+    {
+      if((dPage[c].get_x()<V3.front()<dPage[c].get_x()+dPage[c].get_width()) && (
+        dPage[c].get_x()<V3.back()<dPage[c].get_x()+dPage[c].get_width()) &&(
+        dPage[c].get_y()<V5.front()<dPage[c].get_y()+dPage[c].get_height()) &&(
+        dPage[c].get_y()<V5.back()<dPage[c].get_y()+dPage[c].get_height()))
+      {
+        above = false;
+      }
+
+        }
+// above 인지 확인
+
+    if(inter==true && above==true){
+      tracking_page.push_back(dPage[c]);
+    }
+  }
+  // above page 있는지 확인
+
+  if(tracking_page.size()>0){
+    Page::sort_pages(tracking_page);
+    for(int a=0;a<tracking_page.size();a++){
+      delete_page(tracking_page[a].get_id());
+    }
   }
 
-if(tracking_page.size()>0){
+    // above page=0 이면 delete
+    Page deleted_page(dPage[idx].get_x(),dPage[idx].get_y(), dPage[idx].get_width(), dPage[idx].get_height(), dPage[idx].get_id(), ' ');
+    update_board(deleted_page, true);
+    // 지워주고
 
-sort(tracking_page.begin(), tracking_page.end());
-for(int a= 0;a<tracking_page.size();a++){
-  delete_page(tracking_page[a].get_id());
-  Page deleted_page(tracking_page[a].get_x(),tracking_page[a].get_y(), tracking_page[a].get_width(), tracking_page[a].get_height(), tracking_page[a].get_id(), ' ');
-  update_board(deleted_page, true);
-  int id_index= -1;
-  for(int b=0;b<index_v.size();b++){
-    if( index_v[b].second.get_id()== tracking_page[a].get_id()){
+    int id_index= -1;
+    for(int b=0;b<index_v.size();b++){
+    if( index_v[b].second.get_id()== dPage[idx].get_id()){
       id_index =index_v[b].first;
       break;
     }
   }
-    for(int p=0;p<id_index;p++){
+
+     for(int p=0;p<id_index;p++){
       Page back_page(dPage[p].get_x(),dPage[p].get_y(),dPage[p].get_width(),dPage[p].get_height(),dPage[p].get_id(),dPage[p].get_content());
       update_board(back_page,true);
     }
-  }
-}
- print_board();
- dPage.erase(dPage.begin()+idx);
-  }
-}
-}
+    // 밑에 깔려있는 얘들 복구시켜주고
+    print_board();
+    dPage.erase(dPage.begin()+idx);
 
+
+}
 void Board::removes_page(int id) {
     int idx = -1;
     for (int i = pages.size() - 1; i >= 0; i--) {
