@@ -150,26 +150,28 @@ void Board::delete_page(int id) {
     V5.erase(itery,V5.end());
     sort(V5.begin(),V5.end());  // V3, V5 는 각각 x,y 좌표값 교집합 (곂치는 부분)
 
-    bool inter = false;
-  if((dPage[idx].get_x()<dPage[c].get_x()&&dPage[c].get_x()<dPage[idx].get_x()+dPage[idx].get_width() )|| (dPage[idx].get_x()<dPage[c].get_x()+dPage[c].get_width()&&dPage[c].get_x()+dPage[c].get_width()<dPage[idx].get_x()+dPage[idx].get_width() ) ||( dPage[idx].get_y()<dPage[c].get_y()&&dPage[c].get_y()<dPage[idx].get_y()+dPage[idx].get_height() )|| (dPage[idx].get_y()<dPage[c].get_y()+dPage[c].get_height()&&dPage[c].get_y()+dPage[c].get_height()<dPage[idx].get_y()+dPage[idx].get_height()))
-{
+bool inter = false;
+if(dPage[idx].get_x() < dPage[c].get_x() + dPage[c].get_width() &&
+   dPage[c].get_x() < dPage[idx].get_x() + dPage[idx].get_width() &&
+   dPage[idx].get_y() < dPage[c].get_y() + dPage[c].get_height() &&
+   dPage[c].get_y() < dPage[idx].get_y() + dPage[idx].get_height()) {
   inter = true;
-
 }
-    // delete 대상 page 와 곂치는 부분 있는지 확인
-  bool above=true;
-    for(int r=idx+1;r<c;r++)
-    {
-      if(((dPage[r].get_x()<V3.front()&&V3.front()<dPage[r].get_x()+dPage[r].get_width())) && (
-        dPage[r].get_x()<V3.back()&&V3.back()<dPage[r].get_x()+dPage[r].get_width()) &&(
-        dPage[r].get_y()<V5.front()&&V5.front()<dPage[r].get_y()+dPage[r].get_height()) &&(
-        dPage[r].get_y()<V5.back()&&V5.back()<dPage[r].get_y()+dPage[r].get_height()))
-      {
-        above = false;
-        break;
-      }
 
-        }
+
+    // delete 대상 page 와 곂치는 부분 있는지 확인
+
+ bool above = true;
+for (int r = idx + 1; r < c; r++) {
+if ((V3.front() <= dPage[r].get_x() + dPage[r].get_width() ) &&
+( dPage[r].get_x() <= V3.back()) &&
+(V5.front() <= dPage[r].get_y() + dPage[r].get_height()) &&
+( dPage[r].get_y() <= V5.back())) {
+above = false;
+break;
+}
+}
+
 // above 인지 확인
 
     if(inter==true && above==true){
@@ -213,7 +215,6 @@ void Board::delete_page(int id) {
 void Board::removes_page(int id) {
     int idx = -1;
     for (int i = pages.size() - 1; i >= 0; i--) {
-        if (pages[i].get_id() == id) {
         if (pages[i].get_id() == id) {
             idx = i;
             break;
