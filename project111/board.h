@@ -161,15 +161,15 @@ if(dPage[idx].get_x() < dPage[c].get_x() + dPage[c].get_width() &&
 
     // delete 대상 page 와 곂치는 부분 있는지 확인
 
- bool above = true;
+bool above = true;
 for (int r = idx + 1; r < c; r++) {
-if ((V3.front() <= dPage[r].get_x() + dPage[r].get_width() ) &&
-( dPage[r].get_x() <= V3.back()) &&
-(V5.front() <= dPage[r].get_y() + dPage[r].get_height()) &&
-( dPage[r].get_y() <= V5.back())) {
-above = false;
-break;
-}
+  if ((dPage[r].get_x() <= V3.front() && V3.front() <= dPage[r].get_x() + dPage[r].get_width()) &&
+      (dPage[r].get_x() <= V3.back() && V3.back() <= dPage[r].get_x() + dPage[r].get_width()) &&
+      (dPage[r].get_y() <= V5.front() && V5.front() <= dPage[r].get_y() + dPage[r].get_height()) &&
+      (dPage[r].get_y() <= V5.back() && V5.back() <= dPage[r].get_y() + dPage[r].get_height())) {
+    above = false;
+    break;
+  }
 }
 
 // above 인지 확인
@@ -193,25 +193,13 @@ break;
     update_board(deleted_page, true);
     // 지워주고
 
-    int id_index= -1;
-    for(int b=0;b<index_v.size();b++){
-    if( index_v[b].second.get_id()== dPage[idx].get_id()){
-      id_index =index_v[b].first;
-      break;
-    }
-  }
 
-     for(int p=0;p<id_index;p++){
-      Page back_page(dPage[p].get_x(),dPage[p].get_y(),dPage[p].get_width(),dPage[p].get_height(),dPage[p].get_id(),dPage[p].get_content());
-      update_board(back_page,true);
-    }
 
     // 밑에 깔려있는 얘들 복구시켜주고
     print_board();
-
-
-
 }
+
+
 void Board::removes_page(int id) {
     int idx = -1;
     for (int i = pages.size() - 1; i >= 0; i--) {
@@ -263,4 +251,3 @@ void Board::modify_position(int id, int x, int y) {
     }
   }
 }
-
