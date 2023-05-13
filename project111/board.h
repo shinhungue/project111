@@ -111,18 +111,16 @@ void Board::delete_page(int id) {
           idx = i;
           break;
         }
-    }          // id 해당 page 찾기(idx) dPage 에서
-if(idx==-1){
-  return;
-}
-bool overlap = false;
-bool over = true;
+    }          // id에 따라 pages에서의 index확보..
+
 for(int i=idx+1;i<pages.size();i++){
+  bool overlap = false;
+  bool over = true;
   bool xoverlap = pages[idx].get_x()<(pages[i].get_x()+pages[i].get_width()) &&
                   (pages[idx].get_x()+pages[idx].get_width()) > pages[i].get_x();
   bool yoverlap = pages[idx].get_y()<(pages[i].get_y()+pages[i].get_height()) &&
                   (pages[idx].get_y()+pages[idx].get_height()) > pages[i].get_y();
-  if(xoverlap&&yoverlap){
+  if(xoverlap==true&&yoverlap==true){
     overlap = true;
     int mx = std::max(pages[idx].get_x(), pages[i].get_x());
     int mix = std::min(pages[idx].get_x()+pages[idx].get_width(),
@@ -131,40 +129,40 @@ for(int i=idx+1;i<pages.size();i++){
     int miy = std::min(pages[idx].get_y()+pages[idx].get_height(),
     pages[i].get_y()+pages[i].get_height());
     Page testP(mx,my,mix-mx,miy-my,-1,0);
-    for(int j =i+1;i<pages.size();j++){
+    for(int j =idx+1;j<i;j++){
       bool iscontain = (testP.get_x()>= pages[j].get_x())&&
                        (testP.get_y()>=pages[j].get_y()) &&
         (testP.get_width()+testP.get_x()<=pages[j].get_x()+pages[j].get_width())&&
       (testP.get_y()+testP.get_height() <= pages[j].get_y()+pages[j].get_height());
-      if(iscontain){
+      if(iscontain==true){
         over = false;
         break;
       }
     }
   }
 if(overlap== true&& over==true){
-  d_vec.push_back(pages[idx]);
+  d_vec.push_back(pages[i]);
 }
-overlap = false;
-over = true;
 }
 
 if(d_vec.size()>0){
 
   std::sort(d_vec.begin(),d_vec.end(),compare);
-  for(int i=0;d_vec.size();i++){
+  for(int i=0;i<d_vec.size();i++){
     int iidx = -1;
-    for(int j=0;j<pages.size();j++){
+    for(int j=pages.size()-1;j>=0;j--){
       if(pages[j].get_id()==d_vec[i].get_id()){
         iidx = j;
+        break;
       }
     }
     delete_page(pages[iidx].get_id());
   }
 }
 // 지우는 작업 + 붙이는 작업
-
-
+Page dt_page(pages[idx].get_x(),pages[idx].get_y(),pages[idx].get_width(),pages[idx].get_height(), pages[idx].get_id(),' ');
+  update_board(dt_page, true);
+  print_board();
 }
 
 
