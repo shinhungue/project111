@@ -270,5 +270,20 @@ void Board::modify_position(int id, int x, int y) {
   update_board(pages[idx],true);
   print_board();
 
+    for(int a=id_call.size()-2;a>=0;a--){
+    int iidx = -1;
+    for(int j=0;j<T_pages.size();j++){
+      if(T_pages[j].get_id()==id_call[a]){
+        iidx = j;
+        break;
+      }
+    }
+    if(iidx != -1){
+    pages[iidx].set_content(T_pages[iidx].get_content());
+    update_board(pages[iidx],true);
+    print_board();
+  }
+  }
+
   id_call.erase(id_call.begin(),id_call.end());
 }
