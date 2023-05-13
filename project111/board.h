@@ -21,13 +21,16 @@ class Board {
         void delete_page(int id);
         void modify_content(int id, char content);
         void modify_position(int id, int x, int y);
+        void remove_page(int id);
 
     private:
         int num_jobs, width, height;
         ofstream& output;
         char* board;
         std::vector<Page> pages;
-    void update_board(const Page &page, bool add) {
+        std::vector<Page> T_pages;
+        std::vector<int> id_call;
+void update_board(const Page &page, bool add) {
     char symbol = add ? page.get_content() : '.';
     for (int i = page.get_y(); i < page.get_y() + page.get_height(); i++) {
       for (int j = page.get_x(); j < page.get_x() + page.get_width(); j++) {
@@ -96,6 +99,7 @@ void Board::print_job(int job_idx, char job_type, int id) {
 
 void Board::insert_page(int x, int y, int width, int height, int id, int content) {
   Page page(x,y,width,height,id,content);
+  T_pages.push_back(page);
   pages.push_back(page);
   update_board(page, true);
   if(is_print_board_enabled == true){
@@ -103,7 +107,7 @@ void Board::insert_page(int x, int y, int width, int height, int id, int content
   }
 }
 
-void Board::delete_page(int id) {
+void Board::remove_page(int id) {
   std::vector<Page> d_vec;
   int idx = -1;
   for (int i = pages.size() - 1; i >= 0; i--) {
@@ -156,7 +160,7 @@ if(d_vec.size()>0){
         break;
       }
     }
-    delete_page(pages[iidx].get_id());
+    remove_page(pages[iidx].get_id());
   }
 }
 // 지우는 작업 + 붙이는 작업
@@ -167,8 +171,27 @@ for(int b=0;b<pages.size();b++){
     update_board(pages[b], true);
   }
 }
+  id_call.push_back(pages[idx].get_id());
   print_board();
 }
+
+void Board::delete_page(int id){
+  remove_page(id);
+  for(int i=id_call.size()-2;i>=0;i--){
+    int idx = -1;
+    for(int j=0;j<pages.size();j++){
+      if(pages[j].get_id()==id_call[i]){
+        idx = j;
+        break;
+      }
+    }
+    pages[idx].set_content(T_pages[idx].get_content());
+    update_board(pages[idx],true);
+    print_board();
+  }
+
+}
+
 
 
 
