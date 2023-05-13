@@ -236,6 +236,39 @@ void Board::modify_content(int id, char content) {
   id_call.erase(id_call.begin(),id_call.end());
 }
 void Board::modify_position(int id, int x, int y) {
+   remove_page(id);
+    int idx = -1;
+  for(int i=0;i<T_pages.size();i++){
+    if(T_pages[i].get_id()== id_call[id_call.size()-1]){
+      idx = i;
+      break;
+    }
+  }
 
+  for(int i=0;i<idx;i++){
 
+  bool xoverlap = T_pages[idx].get_x()<(T_pages[i].get_x()+T_pages[i].get_width()) &&
+                  (T_pages[idx].get_x()+T_pages[idx].get_width()) > T_pages[i].get_x();
+  bool yoverlap = T_pages[idx].get_y()<(T_pages[i].get_y()+T_pages[i].get_height()) &&
+                  (T_pages[idx].get_y()+T_pages[idx].get_height()) > T_pages[i].get_y();
+    if(xoverlap==true && yoverlap==true){
+      int xma = std::max(T_pages[idx].get_x(),T_pages[i].get_x());
+      int xmi = std::min(T_pages[idx].get_x()+T_pages[idx].get_width(), T_pages[i].get_x()+ T_pages[i].get_width());
+      int yma = std::max(T_pages[idx].get_y(),T_pages[i].get_y());
+      int ymi = std::min(T_pages[idx].get_y()+T_pages[idx].get_height(), T_pages[i].get_y()+ T_pages[i].get_height());
+      Page overlap_Page(xma,yma,xmi-xma,ymi-yma,-1,T_pages[i].get_content());
+      update_board(overlap_Page,true);
+    }
+  }
+
+  T_pages[idx].set_x(x);
+  T_pages[idx].set_y(y);
+  pages[idx].set_content(T_pages[idx].get_content());
+  pages[idx].set_x(x);
+  pages[idx].set_y(y);
+
+  update_board(pages[idx],true);
+  print_board();
+
+  id_call.erase(id_call.begin(),id_call.end());
 }
