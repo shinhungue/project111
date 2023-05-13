@@ -16,10 +16,7 @@ class Page {
         void set_x(int x) { this->x = x; }
         void set_y(int y) { this->y = y; }
         void set_content(char content) { this->content = content; }
-        static bool compare(const Page& a,const Page& b){
-          return a.id<b.id;
-        }
-       static void sort_pages(std::vector<Page>& p);
+
 
 
     private:
@@ -30,7 +27,6 @@ class Page {
 
 };
 
-void Page::sort_pages(std::vector<Page> &p){
-  std::sort(p.begin(),p.end(),compare);
+bool compare(const Page& a, const Page& b){
+  return a.get_id() < b.get_id();
 }
-
