@@ -185,11 +185,25 @@ void Board::delete_page(int id){
         break;
       }
     }
+    if(idx != -1){
     pages[idx].set_content(T_pages[idx].get_content());
     update_board(pages[idx],true);
     print_board();
   }
-
+  }
+  for(int a=0;a<T_pages.size();a++){
+    if(T_pages[a].get_id()==id_call[id_call.size()-1]){
+      T_pages.erase(T_pages.begin()+a);
+      break;
+    }
+  }
+  for(int a=0;a<pages.size();a++){
+    if(pages[a].get_id()==id_call[id_call.size()-1]){
+      pages.erase(pages.begin()+a);
+      break;
+    }
+  }
+  id_call.erase(id_call.begin(),id_call.end());
 }
 
 
