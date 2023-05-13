@@ -160,8 +160,13 @@ if(d_vec.size()>0){
   }
 }
 // 지우는 작업 + 붙이는 작업
-Page dt_page(pages[idx].get_x(),pages[idx].get_y(),pages[idx].get_width(),pages[idx].get_height(), pages[idx].get_id(),' ');
-  update_board(dt_page, true);
+pages[idx].set_content(' ');
+update_board(pages[idx], true);
+for(int b=0;b<pages.size();b++){
+  if(pages[b].get_content()!=' '){
+    update_board(pages[b], true);
+  }
+}
   print_board();
 }
 
