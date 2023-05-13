@@ -6,7 +6,7 @@
 
 using std::endl;
 using std::ofstream;
-bool is_print_board_enabled =true;
+
 
 class Board {
     public:
@@ -102,9 +102,8 @@ void Board::insert_page(int x, int y, int width, int height, int id, int content
   T_pages.push_back(page);
   pages.push_back(page);
   update_board(page, true);
-  if(is_print_board_enabled == true){
   print_board();
-  }
+
 }
 
 void Board::remove_page(int id) {
@@ -206,14 +205,35 @@ void Board::delete_page(int id){
   id_call.erase(id_call.begin(),id_call.end());
 }
 
-
-
-
-
-
 void Board::modify_content(int id, char content) {
+  remove_page(id);
+  int idx = -1;
+  for(int i=0;i<T_pages.size();i++){
+    if(T_pages[i].get_id()==id_call[id_call.size()-1]){
+      idx = i;
+      break;
+    }
+  }
+  T_pages[idx].set_content(content);
+  pages[idx].set_content(content);
+  update_board(pages[idx],true);
+  print_board();
 
-
+  for(int a=id_call.size()-2;a>=0;a--){
+    int iidx = -1;
+    for(int j=0;j<T_pages.size();j++){
+      if(T_pages[j].get_id()==id_call[a]){
+        iidx = j;
+        break;
+      }
+    }
+    if(iidx != -1){
+    pages[iidx].set_content(T_pages[iidx].get_content());
+    update_board(pages[iidx],true);
+    print_board();
+  }
+  }
+  id_call.erase(id_call.begin(),id_call.end());
 }
 void Board::modify_position(int id, int x, int y) {
 
