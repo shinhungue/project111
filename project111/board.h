@@ -30,6 +30,7 @@ class Board {
         std::vector<Page> pages;
         std::vector<Page> T_pages;
         std::vector<int> id_call;
+        int remove_num=-1;
 void update_board(const Page &page, bool add) {
     char symbol = add ? page.get_content() : '.';
     for (int i = page.get_y(); i < page.get_y() + page.get_height(); i++) {
@@ -107,6 +108,7 @@ void Board::insert_page(int x, int y, int width, int height, int id, int content
 }
 
 void Board::remove_page(int id) {
+
   std::vector<Page> d_vec;
   int idx = -1;
   for (int i = pages.size() - 1; i >= 0; i--) {
@@ -115,6 +117,10 @@ void Board::remove_page(int id) {
           break;
         }
     }          // id에 따라 pages에서의 index확보..
+if(remove_num==-1){
+  remove_num = idx;
+}
+
 
 for(int i=idx+1;i<pages.size();i++){
   bool overlap = false;
@@ -165,6 +171,15 @@ if(d_vec.size()>0){
   }
 }
 // 지우는 작업 + 붙이는 작업
+bool overlaped = false;
+    for (int i = pages[remove_num].get_y(); i < pages[remove_num].get_y() + pages[remove_num].get_height(); i++) {
+      for (int j = pages[remove_num].get_x(); j < pages[remove_num].get_x() + pages[remove_num].get_width(); j++) {
+        if(board[i*width+j]!= pages[remove_num].get_content())
+          overlaped = true;
+        break;
+      }
+    }
+if(overlaped ==true){
 pages[idx].set_content(' ');
 update_board(pages[idx], true);
 for(int b=0;b<pages.size();b++){
@@ -172,9 +187,25 @@ for(int b=0;b<pages.size();b++){
     update_board(pages[b], true);
   }
 }
+
   id_call.push_back(pages[idx].get_id());
   print_board();
 }
+if(remove_num == idx){
+  pages[idx].set_content(' ');
+update_board(pages[idx], true);
+for(int b=0;b<pages.size();b++){
+  if(pages[b].get_content()!=' '){
+    update_board(pages[b], true);
+  }
+}
+
+  id_call.push_back(pages[idx].get_id());
+  print_board();
+}
+
+}
+
 
 void Board::delete_page(int id){
   remove_page(id);
@@ -207,6 +238,7 @@ void Board::delete_page(int id){
     }
   }
   id_call.erase(id_call.begin(),id_call.end());
+  remove_num=-1;
 }
 
 void Board::modify_content(int id, char content) {
@@ -238,6 +270,7 @@ void Board::modify_content(int id, char content) {
   }
   }
   id_call.erase(id_call.begin(),id_call.end());
+  remove_num=-1;
 }
 void Board::modify_position(int id, int x, int y) {
    remove_page(id);
@@ -290,4 +323,5 @@ void Board::modify_position(int id, int x, int y) {
   }
 
   id_call.erase(id_call.begin(),id_call.end());
+  remove_num = -1;
 }
