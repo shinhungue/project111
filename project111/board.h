@@ -159,7 +159,9 @@ if(d_vec.size()>0){
         break;
       }
     }
+    if(pages[iidx].get_content()!=' '){
     remove_page(pages[iidx].get_id());
+    }
   }
 }
 // 지우는 작업 + 붙이는 작업
@@ -184,12 +186,14 @@ void Board::delete_page(int id){
         break;
       }
     }
+    // pages 복구 작업 ( 당사page제외)
     if(idx != -1){
     pages[idx].set_content(T_pages[idx].get_content());
     update_board(pages[idx],true);
     print_board();
   }
   }
+  /// T_pages, pages에서 완전 삭제 + id_call erase
   for(int a=0;a<T_pages.size();a++){
     if(T_pages[a].get_id()==id_call[id_call.size()-1]){
       T_pages.erase(T_pages.begin()+a);
