@@ -298,22 +298,26 @@ void Board::modify_position(int id, int x, int y) {
     print_board();
   }
   }
-  int iiidx = id_call[id_call.size()-2];
-  int target = -1;
+std::vector<int> v;
+std::vector<Page> p;
+for(int i=id_call.size()-1;i>=0;i--){
   for(int a=0;a<pages.size();a++){
-    if(pages[a].get_id()==iiidx){
-      target = a;
-      break;
+    if(pages[a].get_id()==id_call[i]){
+      v.push_back(a);
     }
   }
-  if(target != -1){
-    Page trans_page;
-    trans_page = pages[idx];
-    pages.erase(pages.begin()+ idx);
-    pages.insert(pages.begin()+target-1,trans_page);
-    T_pages.erase(T_pages.begin()+idx);
-    T_pages.insert(T_pages.begin()+target-1,trans_page);
+}
+for(int j=0;j<v.size();j++){
+  p.push_back(pages[v[j]-j]);
+  pages.erase(pages.begin()+v[j]-j);
+  T_pages.erase(T_pages.begin()+v[j]-j);
+
+}
+  for(int b=0;b<p.size();b++){
+    pages.push_back(p[b]);
+    T_pages.push_back(p[b]);
   }
+
   id_call.erase(id_call.begin(),id_call.end());
 
 }
