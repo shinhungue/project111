@@ -170,16 +170,17 @@ if(d_vec.size()>0){
     }
   }
 }
-// 지우는 작업 + 붙이는 작업
+
 bool overlaped = false;
     for (int i = pages[remove_num].get_y(); i < pages[remove_num].get_y() + pages[remove_num].get_height(); i++) {
       for (int j = pages[remove_num].get_x(); j < pages[remove_num].get_x() + pages[remove_num].get_width(); j++) {
-        if(board[i*width+j]!= pages[remove_num].get_content())
-          overlaped = true;
-        break;
+        if(board[i*width+j] != pages[remove_num].get_content())
+        {overlaped = true;
+        break;}
       }
     }
-if(overlaped ==true){
+
+if(overlaped ==true) {
 pages[idx].set_content(' ');
 update_board(pages[idx], true);
 for(int b=0;b<pages.size();b++){
